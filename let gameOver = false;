@@ -1,0 +1,252 @@
+
+Suggested flow:
+
+1. Initialize DOM references.
+2. Render initial state.
+3. On cell click:
+   - Ignore if game over.
+   - Ignore if AI is thinking.
+   - Ignore if current player is not Black.
+   - Validate move.
+   - Apply move.
+   - Advance turn.
+4. If White's turn:
+   - Set `isAiThinking = true`.
+   - Render "White thinking..."
+   - Use `setTimeout` for a short delay.
+   - Choose and apply AI move if available.
+   - Advance turn.
+   - Set `isAiThinking = false`.
+5. Render after each state change.
+
+### `index.html`
+
+Responsibilities:
+
+- Load CSS from `css/style.css`.
+- Define semantic app structure.
+- Include board container.
+- Include score/status elements.
+- Include restart button.
+- Load `js/main.js` as an ES module.
+
+Constraints:
+
+- No CDN.
+- No external scripts.
+- No inline dependency on unavailable assets.
+
+### `css/style.css`
+
+Responsibilities:
+
+- Dark polished styling.
+- Responsive board.
+- Disc visuals.
+- Legal hint visuals.
+- Buttons and status panel styling.
+- Focus-visible states for accessibility.
+
+## Accessibility
+
+Include:
+
+- Clear button labels.
+- Keyboard focus styles.
+- Sufficient color contrast.
+- Board cells implemented as buttons or accessible clickable elements.
+- `aria-label` values for board cells, such as:
+  - "Row 3, column 5, empty legal move"
+  - "Row 4, column 4, white disc"
+- Status updates should be visible text.
+- Consider `aria-live="polite"` for turn/status messages.
+
+## GitHub Pages Compatibility
+
+Requirements:
+
+- Static files only.
+- No build step.
+- No server-side dependencies.
+- ES modules loaded with relative paths.
+- Works when served from a repository subpath.
+- Avoid absolute root paths like `/js/main.js`; use `./js/main.js`.
+
+## Definition of Done
+
+The implementation is complete when:
+
+- The app loads successfully from `index.html`.
+- The board starts in the standard Othello/Reversi position.
+- Black moves first.
+- Human can only make legal Black moves.
+- Legal Black moves are highlighted.
+- Illegal clicks do not change the board.
+- White AI automatically moves after Black.
+- Captured discs flip correctly in all 8 directions.
+- Turn skipping works when a player has no legal moves.
+- Game over is detected when neither player can move or the board is full.
+- Winner/draw message is displayed at game end.
+- Scores update after every move.
+- Restart resets the entire game.
+- UI is dark, polished, and responsive.
+- No CDN or external dependency is used.
+- The project works on GitHub Pages.
+- `.verify_othello.py` can run successfully against the project.
+
+## Verification Plan: `.verify_othello.py`
+
+Create a Python verification script to validate the project without requiring external dependencies.
+
+### Purpose
+
+`.verify_othello.py` should provide confidence that:
+
+1. Required files exist.
+2. The app is static and dependency-free.
+3. HTML references local CSS and JS correctly.
+4. Core pure Othello/Reversi rules behave correctly.
+5. The project can be served by a simple local HTTP server.
+
+### Static File Checks
+
+Verify the existence of:
+
+- `index.html`
+- `css/style.css`
+- `js/board.js`
+- `js/ai.js`
+- `js/ui.js`
+- `js/main.js`
+
+Optional:
+
+- `PLAN.md`
+
+### No-CDN / Dependency Checks
+
+Inspect `index.html` and source files for disallowed references such as:
+
+- `http://`
+- `https://`
+- Common CDN hostnames:
+  - `cdn`
+  - `unpkg`
+  - `jsdelivr`
+  - `cdnjs`
+- External script tags
+- External stylesheet links
+
+Allow local relative references only.
+
+### HTML Structure Checks
+
+Verify that `index.html` contains:
+
+- A board container element
+- Score elements for Black and White
+- A turn/status element
+- A restart button
+- A module script loading `./js/main.js`
+- A stylesheet link to `./css/style.css`
+
+### ES Module Checks
+
+Verify that:
+
+- `js/main.js` imports from `./board.js`
+- `js/main.js` imports from `./ai.js`
+- `js/main.js` imports from `./ui.js`
+- `js/ai.js` imports from `./board.js` if it needs rule helpers
+- No module uses CDN imports
+
+### Pure Rules Verification
+
+Because the rules are implemented in JavaScript, the Python verifier can use one of these approaches:
+
+1. Static source checks for expected exported function names.
+2. Run JavaScript rule tests through a locally available JS runtime if `node` is installed.
+3. If no JS runtime is available, perform static checks only and report that dynamic JS tests were skipped.
+
+Preferred behavior:
+
+- Detect whether `node` is available.
+- If available, create a temporary JS test file that imports `js/board.js`.
+- Run pure rule assertions using Node.
+- Clean up the temporary test file.
+
+Suggested rule assertions:
+
+- Initial board has 2 Black discs and 2 White discs.
+- Black has exactly 4 legal moves at the start.
+- White has exactly 4 legal moves at the start.
+- A known opening Black move flips exactly one White disc.
+- Applying a legal move updates scores correctly.
+- Illegal moves are rejected.
+- Corner/edge directional captures work.
+- Multi-direction captures work.
+- Pass-turn/game-over status can be identified.
+
+### Self-Start HTTP Check
+
+Verify the project can be served by Python's built-in HTTP server.
+
+Suggested approach:
+
+1. Start `python -m http.server` on an available localhost port.
+2. Request `http://127.0.0.1:<port>/index.html`.
+3. Confirm HTTP 200.
+4. Confirm returned HTML contains expected app markers.
+5. Shut down the server cleanly.
+
+This check validates that the app can be served as static content, similar to GitHub Pages.
+
+### Output
+
+The verifier should print a concise report:
+
+- `[PASS] required files`
+- `[PASS] no external dependencies`
+- `[PASS] html structure`
+- `[PASS] module references`
+- `[PASS] pure rules`
+- `[PASS] local HTTP startup`
+
+If a check fails:
+
+- Print `[FAIL] <check name>`
+- Include a helpful explanation
+- Exit with non-zero status
+
+If a dynamic rule check is skipped:
+
+- Print `[SKIP] pure rules dynamic tests: node not found`
+- Continue with static rule checks where possible
+
+## Implementation Order
+
+1. Create `index.html` skeleton.
+2. Create `css/style.css` dark responsive layout.
+3. Implement pure rules in `js/board.js`.
+4. Implement simple AI in `js/ai.js`.
+5. Implement rendering helpers in `js/ui.js`.
+6. Implement orchestration in `js/main.js`.
+7. Create `.verify_othello.py`.
+8. Run verification.
+9. Polish UI interactions and messages.
+10. Final manual browser check.
+
+## Non-Goals for Initial Version
+
+Do not include in the first implementation:
+
+- Online multiplayer
+- Configurable board sizes
+- Difficulty selector
+- Persistent saved games
+- Animations beyond subtle CSS transitions
+- Sound effects
+- External fonts or assets
+- Build tooling
+- Frameworks
+- TypeScript compilation
