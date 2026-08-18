@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <title>Othello — Reversi</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>OTHELLO</h1>
+    <p class="subtitle">You are Black · AI is White</p>
+  </header>
+
+  <section class="scorebar" aria-label="Score and turn">
+    <div class="score-card" id="score-black">
+      <div class="score-disc black"></div>
+      <div>
+        <div class="score-label">Black</div>
+        <div class="score-value" id="score-black-value">2</div>
+      </div>
+    </div>
+    <div class="turn-indicator" id="turn-indicator" aria-live="polite">Your turn</div>
+    <div class="score-card" id="score-white">
+      <div class="score-disc white"></div>
+      <div>
+        <div class="score-label">White</div>
+        <div class="score-value" id="score-white-value">2</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="board-wrap">
+    <div class="board" id="board" aria-label="Othello board"></div>
+    <div class="overlay hidden" id="overlay">
+      <div class="overlay-card">
+        <h2 id="overlay-title">Game over</h2>
+        <p id="overlay-text"></p>
+        <button class="btn primary" id="overlay-btn" type="button">New game</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="controls">
+    <button class="btn" id="new-game-btn" type="button">New game</button>
+    <span class="hint-text">Click a highlighted cell · <kbd>R</kbd> restarts</span>
+  </section>
+
+  <footer class="footer">Standard rules · most discs wins</footer>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
